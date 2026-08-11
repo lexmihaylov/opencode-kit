@@ -7,17 +7,12 @@ const packageRoot = path.resolve(__dirname, "..")
 const targetRoot = process.cwd()
 const force = process.argv.includes("--force")
 
-const targets = new Set(["opencode", "codex", "both"])
-const targetArgIndex = process.argv.indexOf("--target")
-const target = targetArgIndex === -1 ? "opencode" : process.argv[targetArgIndex + 1]
-
-if (!targets.has(target)) {
-  console.error("Invalid --target. Expected one of: opencode, codex, both.")
+if (process.argv.includes("--target")) {
+  console.error("--target is no longer supported; OpenCode is installed by default.")
   process.exit(1)
 }
 
 const opencodeRoot = path.join(targetRoot, ".opencode")
-const codexRoot = path.join(targetRoot, ".codex")
 
 const opencodeEntries = [
   { source: "opencode/opencode.json", target: "opencode.json" },
@@ -25,13 +20,6 @@ const opencodeEntries = [
   { source: "opencode/instructions", target: "instructions" },
   { source: "opencode/skills", target: "skills" },
   { source: "opencode/memory", target: "memory", protectExisting: true },
-]
-
-const codexEntries = [
-  { source: "codex/AGENTS.md", target: "AGENTS.md", root: targetRoot },
-  { source: "codex/policy.json", target: "policy.json" },
-  { source: "codex/skills", target: "skills" },
-  { source: "codex/memory", target: "memory", protectExisting: true },
 ]
 
 function copyEntry(root, entry) {
@@ -61,20 +49,12 @@ function copyEntry(root, entry) {
 function installOpencode() {
   fs.mkdirSync(opencodeRoot, { recursive: true })
   for (const entry of opencodeEntries) copyEntry(opencodeRoot, entry)
-  console.log("Installed opsmith into .opencode/.")
+  console.log("Installed opencode-kit into .opencode/.")
   console.log("Restart opencode so it reloads the new config, agents, skills, and memory.")
 }
 
-function installCodex() {
-  fs.mkdirSync(codexRoot, { recursive: true })
-  for (const entry of codexEntries) copyEntry(codexRoot, entry)
-  console.log("Installed opsmith Codex support into AGENTS.md and .codex/.")
-  console.log("Start a new Codex session so it reloads the new instructions, skills, and memory.")
-}
-
 try {
-  if (target === "opencode" || target === "both") installOpencode()
-  if (target === "codex" || target === "both") installCodex()
+  installOpencode()
 } catch (error) {
   console.error(error.message)
   process.exitCode = 1

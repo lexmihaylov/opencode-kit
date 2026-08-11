@@ -1,14 +1,13 @@
 {
-  "name": "opsmith",
+  "name": "opencode-kit",
   "version": "0.1.0",
-  "description": "Dual-framework kit for OpenCode and Codex project guidance, skills, and memory.",
+  "description": "OpenCode project guidance, skills, and memory for human-led AI-assisted engineering.",
   "bin": {
-    "opsmith": "bin/install.js"
+    "opencode-kit": "bin/install.js"
   },
   "files": [
     "bin/",
-    "opencode/",
-    "codex/"
+    "opencode/"
   ],
   "license": "MIT",
   "engines": {

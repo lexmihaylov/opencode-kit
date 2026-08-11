@@ -20,3 +20,4 @@ Document code-backed features, flows, architecture, APIs, setup, operations, and
 - Prefer updating a focused existing doc; create a new doc only for a distinct topic.
 - Be factual, concise, file-referenced, and explicit about uncertainty.
 - Do not edit code, tests, config, scripts, generated files, or `.opencode/memory/`.
+- When direct documentation work identifies durable, non-sensitive reusable knowledge, include an `Archive candidate` with its topic and evidence, then direct the user to `@archive`. Do not create or update memory directly.

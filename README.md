@@ -1,12 +1,12 @@
-# opsmith
+# opencode-kit
 
-Starter framework for OpenCode and Codex projects. It installs project-local agent guidance, skills, and memory conventions for human-led AI-assisted engineering.
+Starter framework for OpenCode projects. It installs project-local agent guidance, skills, and memory conventions for human-led AI-assisted engineering.
 
 The framework is designed for small, reviewable changes, compact communication, reusable project memory, strong security defaults, and engineer ownership of the final result.
 
 ## Mission
 
-`opsmith` exists to make AI-assisted engineering better and safer.
+`opencode-kit` exists to make AI-assisted engineering better and safer.
 
 The goal is not to replace the development process or move decision-making away from the engineer. The goal is to help engineers work faster with AI while keeping them firmly in charge of architecture, coding style, optimization, tradeoffs, and the full context of the codebase.
 
@@ -21,43 +21,30 @@ Run from the root of the project where you want to install the framework.
 Install the default OpenCode setup from the GitHub repository:
 
 ```sh
-npx github:lexmihaylov/opsmith
-```
-
-Install Codex support instead:
-
-```sh
-npx github:lexmihaylov/opsmith -- --target codex
-```
-
-Install both OpenCode and Codex support:
-
-```sh
-npx github:lexmihaylov/opsmith -- --target both
+npx github:lexmihaylov/opencode-kit
 ```
 
 Install from a specific branch, tag, or commit:
 
 ```sh
-npx github:lexmihaylov/opsmith#<ref>
+npx github:lexmihaylov/opencode-kit#<ref>
 ```
 
 Install from the full Git URL:
 
 ```sh
-npx git+https://github.com/lexmihaylov/opsmith.git
+npx git+https://github.com/lexmihaylov/opencode-kit.git
 ```
 
 If framework files already exist, the installer stops instead of overwriting them. Use `--force` only when you intentionally want to replace existing framework files:
 
 ```sh
-npx github:lexmihaylov/opsmith --force
+npx github:lexmihaylov/opencode-kit --force
 ```
 
-Restart OpenCode or start a new Codex session after installing so the tool reloads instructions, skills, and memory.
+Restart OpenCode after installing so it reloads instructions, skills, and memory.
 
 Existing `.opencode/memory/` is protected. The installer copies starter memory only when `.opencode/memory/` does not exist; `--force` does not overwrite existing project memories or `.opencode/memory/index.md`.
-Existing `.codex/memory/` is protected the same way for Codex installs.
 
 ## Installed Files
 
@@ -69,14 +56,7 @@ The OpenCode harness under `opencode/` copies these files into `.opencode/`:
 - `.opencode/skills/`
 - `.opencode/memory/`
 
-The Codex target copies these files:
-
-- `AGENTS.md`
-- `.codex/policy.json`
-- `.codex/skills/`
-- `.codex/memory/`
-
-The installer is intentionally conservative. It will not replace existing files unless `--force` is used. Existing `.opencode/memory/` and `.codex/memory/` are always skipped to protect project memories.
+The installer is intentionally conservative. It will not replace existing files unless `--force` is used. Existing `.opencode/memory/` is always skipped to protect project memories.
 
 ## Framework Goals
 
@@ -87,7 +67,7 @@ The installer is intentionally conservative. It will not replace existing files 
 - Prefer small, reviewable, secure changes over broad rewrites.
 - Keep communication compact and easy to scan.
 - Save durable project knowledge in compressed memory files.
-- Use OpenCode permissions for enforceable safety rules where available; use explicit Codex guidance for the same intent in Codex projects.
+- Use OpenCode permissions for enforceable safety rules where available.
 - Treat the agent as a collaborator that accelerates work, not as a replacement for engineering judgment.
 
 ## OpenCode Configuration
@@ -116,23 +96,7 @@ Skills are loaded from the project-local skills directory:
 }
 ```
 
-## Codex Configuration
-
-Codex support uses Codex-native project files in `codex/`:
-
-- `AGENTS.md` contains durable repo-wide instructions, communication policy, coding policy, delegation guidance, and memory routing.
-- `.codex/policy.json` mirrors the OpenCode permission categories and default role in a machine-readable Codex policy file.
-- `.codex/skills/` contains reusable task workflows, including the shared implementation skills and the Codex-specific workflow skills.
-- `.codex/skills/orchestrate/` contains the Codex orchestration workflow for explicit multi-step coordination.
-- `.codex/skills/organize/` contains the Codex planning and replanning workflow.
-- `.codex/skills/develop/` contains the Codex implementation workflow.
-- `.codex/memory/index.md` is the memory routing table.
-
-Codex now mirrors the full OpenCode harness structure inside `codex/` and preserves the same intent in project files; [`codex/AGENTS.md`](/Users/aleksandar.mihaylov/Documents/Projects/opencode-kit/codex/AGENTS.md) includes repo-wide safety rules that mirror the OpenCode permission policy, while actual command and filesystem enforcement remains controlled by Codex configuration, sandboxing, and approval policy.
-
-## Skills
-
-The Codex setup uses focused skills for the main workflows.
+## OpenCode Agents
 
 ### `document`
 
@@ -306,6 +270,22 @@ Applies stricter handling for auth, authorization, validation, secrets, logging,
 
 Guides UI, React, styling, accessibility, responsive layouts, forms, loading states, and client-side state.
 
+### `interaction-flow-spec`
+
+Guides user journeys, forms, state transitions, consequential actions, recovery, and responsive interaction behavior.
+
+### `web-accessibility`
+
+Guides accessible UI implementation and evidence-based audits without making conformance claims.
+
+### `usability-validation`
+
+Guides task-focused usability testing, findings, and retest recommendations.
+
+### `visual-character-review`
+
+Guides product-specific visual direction and critiques that avoid generic-looking layouts.
+
 ### `api`
 
 Guides API routes, handlers, clients, contracts, request/response shapes, auth boundaries, errors, and integrations.
@@ -313,6 +293,26 @@ Guides API routes, handlers, clients, contracts, request/response shapes, auth b
 ### `dependencies`
 
 Guides package, tool, framework, plugin, generated-code, and lockfile changes.
+
+### `evidence-based-verification`
+
+Guides acceptance-criterion evidence, targeted verification, and residual-risk reporting.
+
+### `skill-authoring`
+
+Guides creation, maintenance, trigger boundaries, and evaluation of framework skills.
+
+### `data-change-safety`
+
+Guides schema changes, migrations, backfills, data repairs, compatibility, and recovery.
+
+### `observability`
+
+Guides production logs, metrics, traces, alerts, health checks, and diagnostic instrumentation.
+
+### `git-change-safety`
+
+Guides scoped Git inspection, staging, history changes, conflict resolution, and remote safety.
 
 ### `memory`
 
@@ -424,7 +424,7 @@ Memory should capture durable knowledge that helps future agents work without re
 
 ## Recommended Workflow
 
-Use the built-in OpenCode `build` agent or Codex's default coding flow for normal development work.
+Use the built-in OpenCode `build` agent for normal development work.
 
 Use focused agents or workflow skills when the task matches their narrow purpose:
 
@@ -448,18 +448,12 @@ For low-confidence or ambiguous work, clarify first. The framework intentionally
 
 ## Updating The Framework
 
-After changing files under `opencode/`, restart OpenCode. After changing `AGENTS.md`, `.codex/skills/`, or `.codex/memory/`, start a new Codex session. Running sessions keep using previously loaded configuration.
+After changing files under `opencode/`, restart OpenCode. Running sessions keep using previously loaded configuration.
 
 To reinstall into a project and replace existing framework files except project memory:
 
 ```sh
-npx github:lexmihaylov/opsmith --force
+npx github:lexmihaylov/opencode-kit --force
 ```
 
-For Codex:
-
-```sh
-npx github:lexmihaylov/opsmith -- --target codex --force
-```
-
-Use `--force` carefully. It replaces installed framework files, but preserves existing `.opencode/memory/` and `.codex/memory/`.
+Use `--force` carefully. It replaces installed framework files, but preserves existing `.opencode/memory/`.
