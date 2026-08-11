@@ -96,269 +96,61 @@ Skills are loaded from the project-local skills directory:
 }
 ```
 
-## OpenCode Agents
+## Included Agents
 
-### `document`
+The custom agents live in `opencode/agents/` and are installed under `.opencode/agents/`. The built-in `build` agent remains the default; `plan` is also available for direct OpenCode use.
 
-Skill for creating and updating Markdown documentation.
+| Agent | Mode | Purpose |
+| --- | --- | --- |
+| `orchestrate` | primary | Read-only coordinator for routing, approval gates, delegated implementation, verification, review, and memory capture. |
+| `specify` | all | Turns product requests into provider-neutral, implementation-ready tasks with scope, non-goals, acceptance criteria, constraints, and handoff; may delegate documentation work to `document`. |
+| `organize` | subagent | Plans and replans non-trivial work, recording scope, checkpoints, acceptance criteria, invariants, non-goals, and affected contracts. |
+| `develop` | subagent | Implements approved, scoped changes using the narrowest safe approach and returns blockers to the orchestrator. |
+| `debug` | subagent | Diagnoses failures, stack traces, failed commands, flaky behavior, and runtime bugs before implementation. Read-only. |
+| `review` | all | Reviews approved scope for correctness, security, regressions, contracts, overengineering, and reviewability. Read-only. |
+| `design` | subagent | Produces implementation-ready UX, visual design, design-system, component, responsive, and accessibility guidance. Read-only. |
+| `research` | all | Researches tools, integrations, architecture options, compatibility, licensing, maintenance, and tradeoffs before planning. Read-only; web research enabled. |
+| `document` | all | Writes code-backed Markdown documentation for features, flows, architecture, APIs, setup, and operations. Edits only `docs/**/*.md`. |
+| `archive` | subagent | Compresses durable, reusable project knowledge into focused `.opencode/memory/*.md` files. Edits only memory files and cannot use Bash. |
 
-Use it when you want documentation for:
-
-- Features
-- Implementation approaches
-- Architecture and module boundaries
-- Data flow
-- APIs
-- Setup and operational behavior
-- Durable project knowledge
-
-Permissions:
-
-- Can read/search normal project files through inherited global permissions.
-- Can edit only `docs/*.md` and `docs/**/*.md`.
-- Can run only `mkdir docs` and `mkdir -p docs`.
-- Cannot edit source code, tests, config, scripts, package files, generated files, or memory files.
-
-Invoke with:
-
-```text
-@document document the auth session flow
-```
-
-### `research`
-
-Skill for pre-implementation research and decision shaping.
-
-Use it when you want help with:
-
-- Integration possibilities
-- Library and tool selection
-- Architecture alternatives
-- Feasibility and tradeoff analysis
-- External ecosystem checks and best practices
-
-Permissions:
-
-- Inherits global read/search permissions.
-- Cannot edit files.
-- Can delegate only to read-only subagents (`explore`, `scout`).
-- Inherits global bash policy: normal commands are allowed; potentially destructive commands require approval; environment-reading commands are denied.
-- Can use web fetching for external research.
-- Verifies low-confidence claims with web search and source fetches before concluding.
-
-Invoke with:
-
-```text
-@research compare background job options for this project
-```
-
-Expected output is grounded options, tradeoffs, a recommendation, and a concise "Ready for @plan" handoff.
-
-### `specify`
-
-Readonly agent for turning product requests into implementation-ready tasks and user stories.
-
-Use it when you want to:
-
-- Define a feature, bug, spike, task, or focused epic slice.
-- Turn an ambiguous request into bounded scope and explicit non-goals.
-- Write testable acceptance criteria before planning or implementation.
-- Prepare a canonical task that can be handed to documentation or orchestration.
-
-Permissions:
-
-- Can read and search relevant project context.
-- Cannot edit files, run shell commands, delegate work, or create external tickets.
-- Does not assume Jira, Linear, GitHub Issues, Azure Boards, or any MCP.
-
-Invoke with:
-
-```text
-@specify define the acceptance criteria for passwordless sign-in
-```
-
-The output uses a provider-neutral task contract with status, type, user value, context, scope, non-goals, acceptance criteria, constraints, verification expectations, open questions, and a downstream handoff.
-
-Tracker-specific conversion should be implemented later as skills such as `jira-issues`, `linear-issues`, or `github-issues`. Those skills can align the canonical task with an available MCP, inspect provider metadata, and prepare or execute an approved external operation without coupling `specify` to a vendor.
-
-### `review`
-
-Skill for code and security review.
-
-Use it when you want a skeptical review for:
-
-- Correctness bugs
-- Regressions
-- Security risks
-- Data exposure
-- Authentication and authorization issues
-- Input validation gaps
-- Unsafe logging
-- File or network access risks
-- Dependency risks
-- Overengineering
-- Hard-to-review diffs
-- Convention violations
-
-Permissions:
-
-- Inherits global read/search permissions.
-- Cannot edit files.
-- Inherits global bash policy: normal commands are allowed; potentially destructive commands require approval; environment-reading commands are denied.
-
-Invoke with:
-
-```text
-@review review the current changes
-```
-
-The main `build` agent may also use this subagent when a focused review pass is useful.
-
-### `debug`
-
-Skill for diagnosing failures before implementation.
-
-Use it when working with:
-
-- Stack traces
-- Failed command output
-- Runtime bugs
-- Flaky behavior
-- Bug reports
-- Unknown root causes
-
-Permissions:
-
-- Inherits global read/search permissions.
-- Cannot edit files.
-- Inherits global bash policy: normal commands are allowed; potentially destructive commands require approval; environment-reading commands are denied.
-
-Invoke with:
+Invoke an agent with its name, for example:
 
 ```text
 @debug diagnose this failing test output
+@orchestrate implement the approved payment flow
 ```
 
-The expected output is the likely root cause, supporting evidence, and the smallest safe fix.
+All read-only agents are prohibited from editing. `orchestrate` delegates file changes to `develop`; `archive` owns all memory writes. Agent-specific permissions are defined in each agent file and merged with the shared permissions in `opencode/opencode.json`.
 
-### `archive`
+## Included Skills
 
-Skill for saving durable project knowledge into memory.
+Skills live in `opencode/skills/<name>/SKILL.md`, are installed under `.opencode/skills/`, and are loaded from that directory by `opencode/opencode.json`. Each skill is triggered by the matching work context:
 
-All memory creation, updates, compression, and saving should be delegated to `archive`. Other agents may read memory for context, but should not write memory files directly.
-
-Use it when you want to:
-
-- Save a convention
-- Archive an implementation approach
-- Preserve architecture or flow knowledge
-- Record integration details
-- Capture important decisions
-
-Permissions:
-
-- Inherits global read/search permissions.
-- Can edit only `.opencode/memory/*.md`.
-- Cannot use bash.
-
-Invoke with:
-
-```text
-@archive save this API error handling convention
-```
-
-Memory should be compressed as much as possible without losing context. The agent removes narrative and temporary details while preserving exact constraints, reasons, file paths, naming conventions, module boundaries, domain rules, integration details, and decisions.
-
-## Skills
-
-### `conventions`
-
-Applies project coding conventions and implementation preferences.
-
-Core rules:
-
-- Prefer small, reviewable changes.
-- Keep files small and easy to scan.
-- Apply the global coding policy: keep responsibilities focused and separate concerns before files become monolithic.
-- Separate functionality into services and helpers when it improves reuse or clarity.
-- Reuse existing helpers, services, modules, and patterns before adding new ones.
-- Avoid overengineered approaches and speculative abstractions.
-- Apply security conventions and best practices heavily.
-
-### `testing`
-
-Guides test selection, fixtures, mocks, regression coverage, and verification commands.
-
-### `security`
-
-Applies stricter handling for auth, authorization, validation, secrets, logging, errors, file/network access, dependencies, and data exposure.
-
-### `frontend`
-
-Guides UI, React, styling, accessibility, responsive layouts, forms, loading states, and client-side state.
-
-### `interaction-flow-spec`
-
-Guides user journeys, forms, state transitions, consequential actions, recovery, and responsive interaction behavior.
-
-### `web-accessibility`
-
-Guides accessible UI implementation and evidence-based audits without making conformance claims.
-
-### `usability-validation`
-
-Guides task-focused usability testing, findings, and retest recommendations.
-
-### `visual-character-review`
-
-Guides product-specific visual direction and critiques that avoid generic-looking layouts.
-
-### `api`
-
-Guides API routes, handlers, clients, contracts, request/response shapes, auth boundaries, errors, and integrations.
-
-### `dependencies`
-
-Guides package, tool, framework, plugin, generated-code, and lockfile changes.
-
-### `evidence-based-verification`
-
-Guides acceptance-criterion evidence, targeted verification, and residual-risk reporting.
-
-### `skill-authoring`
-
-Guides creation, maintenance, trigger boundaries, and evaluation of framework skills.
-
-### `data-change-safety`
-
-Guides schema changes, migrations, backfills, data repairs, compatibility, and recovery.
-
-### `observability`
-
-Guides production logs, metrics, traces, alerts, health checks, and diagnostic instrumentation.
-
-### `git-change-safety`
-
-Guides scoped Git inspection, staging, history changes, conflict resolution, and remote safety.
-
-### `memory`
-
-Guides how durable project knowledge is read, created, and updated.
-
-Core rules:
-
-- Use `.opencode/memory/index.md` as a routing table.
-- Read only relevant memory files.
-- Delegate memory creation, updates, compression, and saving to `archive`.
-- Add memory only for durable, reusable project knowledge.
-- Keep each memory file focused on one concept.
-- Never store secrets, credentials, customer data, or temporary task details.
+| Skill | Use for |
+| --- | --- |
+| `conventions` | Project coding conventions, architecture, organization, reuse, reviewability, and implementation preferences. |
+| `testing` | Selecting or running tests, fixtures, mocks, regression coverage, and verification commands. |
+| `security` | Authentication, authorization, validation, secrets, logging, errors, file/network access, dependencies, supply-chain risk, and data exposure. |
+| `frontend` | UI, React components, styling, accessibility, responsive layouts, forms, loading states, and client-side state. |
+| `strict-lean-react-next` | React/Next.js code, hooks, components, App Router, server actions, route handlers, UI state, file splitting, and maintainability. |
+| `interaction-flow-spec` | User journeys, forms, multi-step and async flows, destructive actions, permissions, and recovery paths. |
+| `web-accessibility` | Accessible interactive UI, forms, navigation, widgets, dialogs, responsive reflow, motion, and evidence-based audits. |
+| `usability-validation` | Validating whether users can complete meaningful tasks and planning or evaluating usability testing. |
+| `visual-character-review` | Visual direction, hierarchy, typography, density, color, imagery, repetition, and generic-looking layouts. |
+| `api` | API routes, handlers, clients, contracts, request/response shapes, auth boundaries, errors, and integrations. |
+| `dependencies` | Adding, removing, upgrading, or evaluating packages, tools, frameworks, plugins, generated code, and lockfiles. |
+| `data-change-safety` | Database schemas, persisted data, migrations, backfills, retention, imports, exports, and data repair. |
+| `observability` | Production logs, metrics, traces, alerts, health checks, correlation IDs, and operational diagnostics. |
+| `git-change-safety` | Inspecting changes, staging, commits, conflict resolution, rebasing, pushing, and repository-history safety. |
+| `evidence-based-verification` | Completion claims, verification sufficiency, acceptance-criterion evidence, and residual-risk reporting. |
+| `skill-authoring` | Creating, updating, reviewing, evaluating, and defining trigger boundaries for framework skills. |
+| `memory` | Reading durable project memory and deciding what project knowledge should be archived. |
 
 ## Shared Instructions
 
 `opencode/instructions/communication.md` and `opencode/instructions/coding-policy.md` apply globally through `opencode/opencode.json`.
 
-It defines two important behaviors.
+Together they define the global behavior expected from every agent.
 
 ### Coding Policy
 
@@ -405,6 +197,19 @@ When presenting an approach, agents should include only:
 Approach: <one short sentence>
 Confidence: <0.0-1.0>
 ```
+
+### Delegation
+
+Specialized work should go to the narrowest matching agent:
+
+- Failures, stack traces, root-cause analysis, and flaky behavior go to `debug`.
+- Code review, security review, regressions, and test-gap analysis go to `review`.
+- Creating, updating, compressing, or saving memory goes to `archive`.
+- Delegations stay focused on the exact task or artifact needed.
+
+### Memory Access
+
+Main agents may read `.opencode/memory/index.md` and only the linked memory files relevant to the current task. Memory is a routing table, not a place for general rules or task narration.
 
 ## Permissions
 
