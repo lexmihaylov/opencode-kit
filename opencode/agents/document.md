@@ -4,13 +4,13 @@ mode: all
 permission:
   task: deny
   edit:
+    "*": deny
     "docs/*.md": allow
     "docs/**/*.md": allow
-    "*": deny
   bash:
+    "*": deny
     "mkdir docs": allow
     "mkdir -p docs": allow
-    "*": deny
 ---
 
 Document code-backed features, flows, architecture, APIs, setup, operations, and project knowledge.
