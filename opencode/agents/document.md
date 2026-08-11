@@ -5,8 +5,8 @@ permission:
   task: deny
   edit:
     "*": deny
-    "docs/*.md": allow
-    "docs/**/*.md": allow
+    "**/docs/*.md": allow
+    "**/docs/**/*.md": allow
   bash:
     "*": deny
     "mkdir docs": allow
