@@ -5,7 +5,7 @@ permission:
   task: deny
   edit:
     "*": deny
-    ".opencode/memory/*.md": allow
+    "**/.opencode/memory/*.md": allow
   bash: deny
 ---
 
