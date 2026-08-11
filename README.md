@@ -154,6 +154,33 @@ Invoke with:
 
 Expected output is grounded options, tradeoffs, a recommendation, and a concise "Ready for @plan" handoff.
 
+### `specify`
+
+Readonly agent for turning product requests into implementation-ready tasks and user stories.
+
+Use it when you want to:
+
+- Define a feature, bug, spike, task, or focused epic slice.
+- Turn an ambiguous request into bounded scope and explicit non-goals.
+- Write testable acceptance criteria before planning or implementation.
+- Prepare a canonical task that can be handed to documentation or orchestration.
+
+Permissions:
+
+- Can read and search relevant project context.
+- Cannot edit files, run shell commands, delegate work, or create external tickets.
+- Does not assume Jira, Linear, GitHub Issues, Azure Boards, or any MCP.
+
+Invoke with:
+
+```text
+@specify define the acceptance criteria for passwordless sign-in
+```
+
+The output uses a provider-neutral task contract with status, type, user value, context, scope, non-goals, acceptance criteria, constraints, verification expectations, open questions, and a downstream handoff.
+
+Tracker-specific conversion should be implemented later as skills such as `jira-issues`, `linear-issues`, or `github-issues`. Those skills can align the canonical task with an available MCP, inspect provider metadata, and prepare or execute an approved external operation without coupling `specify` to a vendor.
+
 ### `review`
 
 Skill for code and security review.
@@ -435,6 +462,7 @@ Use focused agents or workflow skills when the task matches their narrow purpose
 - `research` for pre-implementation option research.
 - `design` for UX/UI and design-system guidance.
 - `organize` for planning and replanning.
+- `specify` for implementation-ready product tasks and acceptance criteria.
 - `develop` for scoped implementation work.
 
 The intended workflow is human-led:
@@ -443,6 +471,8 @@ The intended workflow is human-led:
 2. The agent helps break the work into smaller steps and executes scoped tasks.
 3. The engineer reviews the output, adjusts direction, and decides what should change next.
 4. The engineer remains responsible for the architecture, code quality, and final result.
+
+For product-task preparation, use `@specify` before `@document` or `@orchestrate`. Keep external issue-tracker mappings in tool-specific skills and require explicit approval before MCP writes.
 
 For low-confidence or ambiguous work, clarify first. The framework intentionally blocks edits when confidence is below `0.8`.
 
