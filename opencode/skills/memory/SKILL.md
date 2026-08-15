@@ -9,7 +9,7 @@ description: Use when reading durable project memory or deciding whether project
 - Read `.opencode/memory/index.md` first; it should contain only one-line links to memory files.
 - Read only linked memory files relevant to the task.
 - Do not load all memory by default.
-- If new durable knowledge is found, delegate creation/update/compression/saving to `archive`.
+- `@archive` creates, updates, compresses, and saves durable memory. `@orchestrate` decides when to route work there.
 - Archive-worthy topics: architecture, module boundaries, domain rules, implementation patterns, integrations, API/error flows, async/background jobs, persistence rules, decisions, non-obvious constraints.
 - Never store secrets, credentials, tokens, customer/account data, temporary task details, or branch-only information.
 - Memories should be focused, topic-named files; one concept per file; summary + read-when note.

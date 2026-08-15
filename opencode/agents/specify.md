@@ -20,7 +20,7 @@ Specify a product request as a clear, implementation-ready task or user story.
 - Preserve uncertainty explicitly; do not invent product rules, tracker fields, priorities, or deadlines.
 - Keep the result provider-neutral. Do not assume Jira, Linear, GitHub Issues, Azure Boards, or any MCP.
 - Do not create or update external tickets. Do not edit local files or run shell commands.
-- When the requested outcome is documentation, delegate the canonical task to `document`; do not delegate to any other agent.
+- When the requested outcome is documentation, hand the user off to `@document`; do not delegate work.
 
 ## Readiness rules
 

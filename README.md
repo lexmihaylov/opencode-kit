@@ -103,7 +103,7 @@ The custom agents live in `opencode/agents/` and are installed under `.opencode/
 | Agent | Mode | Purpose |
 | --- | --- | --- |
 | `orchestrate` | primary | Read-only coordinator for routing, approval gates, delegated implementation, verification, review, and memory capture. |
-| `specify` | all | Turns product requests into provider-neutral, implementation-ready tasks with scope, non-goals, acceptance criteria, constraints, and handoff; may delegate documentation work to `document`. |
+| `specify` | all | Turns product requests into provider-neutral, implementation-ready tasks with scope, non-goals, acceptance criteria, constraints, and handoff to the appropriate direct agent. |
 | `organize` | subagent | Plans and replans non-trivial work, recording scope, checkpoints, acceptance criteria, invariants, non-goals, and affected contracts. |
 | `develop` | subagent | Implements approved, scoped changes using the narrowest safe approach and returns blockers to the orchestrator. |
 | `debug` | subagent | Diagnoses failures, stack traces, failed commands, flaky behavior, and runtime bugs before implementation. Read-only. |
@@ -198,14 +198,14 @@ Approach: <one short sentence>
 Confidence: <0.0-1.0>
 ```
 
-### Delegation
+### Orchestration Routing
 
-Specialized work should go to the narrowest matching agent:
+Only `@orchestrate` delegates specialized work to subagents:
 
 - Failures, stack traces, root-cause analysis, and flaky behavior go to `debug`.
 - Code review, security review, regressions, and test-gap analysis go to `review`.
 - Creating, updating, compressing, or saving memory goes to `archive`.
-- Delegations stay focused on the exact task or artifact needed.
+- Delegations stay focused on the exact task or artifact needed. Direct `@build` and `@plan` sessions retain their built-in workflows and do not inherit these routing or approval rules.
 
 ### Memory Access
 
@@ -237,7 +237,7 @@ opencode merges global and agent permissions. Agent rules take precedence.
 
 The framework installs a minimal `.opencode/memory/index.md`. Specific memory files are created as development work uncovers durable project knowledge.
 
-Memory writes are handled by the `archive` subagent. Main agents should read memory when relevant and delegate memory-saving work to `archive` instead of editing `.opencode/memory/` directly.
+Memory writes are handled by the `archive` subagent. In direct sessions, switch to `@archive` to save durable memory; `@orchestrate` handles that routing in orchestration sessions.
 
 Use `.opencode/memory/index.md` as the entry point. It is a pure routing table and should contain only concise links to focused memory files.
 

@@ -28,4 +28,4 @@ Prefer local conventions over generic best practices. Inspect nearby code and ro
 
 - Update docs when behavior/setup/commands/public usage changes.
 - Comments only for non-obvious constraints/tradeoffs/domain rules.
-- Durable memory writes must be delegated to `archive`.
+- Durable memory writes belong to `@archive`; `@orchestrate` handles that routing when used.
