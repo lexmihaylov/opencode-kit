@@ -17,7 +17,7 @@ For complex implementation, architecture, debug, review, or docs decisions:
 
 # Orchestration
 
-- Only `@orchestrate` applies cross-agent routing, approval gates, intent ledgers, and review waivers.
+- Only `@orchestrate` applies cross-agent routing, session-mode selection, intent ledgers, and review waivers. Approval gates apply only when its selected session mode is `Gated`.
 - Direct agents keep their own workflows; do not delegate work or present orchestration gates.
 
 # Memory

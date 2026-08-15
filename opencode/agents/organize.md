@@ -17,5 +17,5 @@ Organize work for OpenCode tasks.
 - Return focused questions to the orchestrator when required information is missing.
 - If confidence is too low, stop and surface the missing decision instead of guessing.
 - Return the completed plan unchanged to the orchestrator; do not prompt the user.
-- Do not approve implementation implicitly; return control to the orchestrator for the user's `Approve` or `Refine` decision.
+- Do not approve implementation implicitly; return control to the orchestrator to apply the selected session mode. In `Gated` mode, it presents the user's `Approve` or `Refine` decision; in `Autonomous` mode, it proceeds to implementation.
 - Keep output read-only and focused on actionable next steps.

@@ -113,6 +113,17 @@ The custom agents live in `opencode/agents/` and are installed under `.opencode/
 | `document` | all | Writes code-backed Markdown documentation for features, flows, architecture, APIs, setup, and operations. Edits only `docs/**/*.md`. |
 | `archive` | subagent | Compresses durable, reusable project knowledge into focused `.opencode/memory/*.md` files. Edits only memory files and cannot use Bash. |
 
+### Orchestration Modes
+
+Each `@orchestrate` session begins by recommending a mode from the submitted task, then asks the developer to choose it:
+
+| Mode | Recommended when | Behavior |
+| --- | --- | --- |
+| `Gated` | Scope is unclear or work affects architecture, contracts, data, security, permissions, dependencies, or broad behavior. | Requires approval for a plan and required review scope, then asks how to disposition review findings. |
+| `Autonomous` | The task is well-defined, low-risk, and has clear acceptance criteria. | Proceeds through planning, implementation, verification, and required review without approval gates. Clearly actionable review fixes are applied; material risks and unresolved decisions are returned to the developer. |
+
+The developer's selected mode applies for the session. If the task reveals a material risk or unresolved decision later, `orchestrate` asks whether to switch to `Gated`.
+
 Invoke an agent with its name, for example:
 
 ```text
